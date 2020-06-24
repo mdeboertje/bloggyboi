@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('blog_new') }}" class="btn btn-dark mb-2">Nieuwe blog</a>
+        {% endif %}
+
+
+        <div class="row">
+
+            {% for blog in blogs %}
+                <div class="col-md-4 mb-5">
+                    <div class="card">
+                        <img src="{{ vich_uploader_asset(blog, 'imageFile') }}" class="card-img-top" alt="...">
+                        <div class="card-body ">
+                            <h5 class="card-title">{{ blog.title }}</h5>
+                            <p class="card-text">{{ blog.body | raw }}</p>
+                            <a href="{{ path('blog_show', {'id' : blog.id}) }}" class="btn btn-dark">Lees meer</a>
+
+                        </div>
+                        <div class="card-footer">
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('blog_edit', {'id' : blog.id}) }}" class=" btn btn-dark">Bewerk</a>
+                                <a href="{{ path('blog_edit', {'id' : blog.id}) }}"
+                                   class=" btn btn-danger">Verwijder</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
