@@ -3,6 +3,12 @@
 {% block title %}Edit Blog{% endblock %}
 
 {% block body %}
+    <style>
+        img {
+            width: 250px;
+        }
+    </style>
+
     <h1>Edit Blog</h1>
 
     {{ include('blog/_form.html.twig', {'button_label': 'Update'}) }}
