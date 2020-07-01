@@ -7,22 +7,22 @@
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ blog.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ blog.title }}</td>
-            </tr>
-            <tr>
-                <th>Body</th>
-                <td>{{ blog.body | raw }}</td>
-            </tr>
-            <tr>
-                <th>Modified</th>
-                <td>{{ blog.modified ? blog.modified|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ blog.id }}</td>
+        </tr>
+        <tr>
+            <th>Title</th>
+            <td>{{ blog.title }}</td>
+        </tr>
+        <tr>
+            <th>Body</th>
+            <td>{{ blog.body | raw }}</td>
+        </tr>
+        <tr>
+            <th>Modified</th>
+            <td>{{ blog.modified ? blog.modified|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
         </tbody>
     </table>
 
@@ -31,4 +31,39 @@
     <a href="{{ path('blog_edit', {'id': blog.id}) }}">edit</a>
 
     {{ include('blog/_delete_form.html.twig') }}
+
+    {{ include('comment/_form.html.twig') }}
+
+    {% for message in app.flashes('success') %}
+        <div id="successMessage" class="alert alert-notice ">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="container">
+        {% for comment in comments %}
+            <div class="row">
+                <div class="col-8">
+                    <div class="card card-white post">
+                        <div class="post-heading">
+                            <div class="float-left image">
+                                <img src="http://bootdey.com/img/Content/user_1.jpg" class="img-circle avatar"
+                                     alt="user profile image">
+                            </div>
+                            <div class="float-left meta">
+                                <div class="title h5">
+                                    <a href="#" class="user_name"><b>{{ comment.user.username }}</b></a>
+                                    made a post.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-description">
+                            <p>{{ comment.description }}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

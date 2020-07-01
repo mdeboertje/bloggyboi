@@ -3,8 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Blog;
+use App\Entity\Comment;
+use App\Entity\User;
 use App\Form\BlogType;
+use App\Form\CommentType;
 use App\Repository\BlogRepository;
+use App\Repository\CommentRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,8 +24,11 @@ class BlogController extends AbstractController
     /**
      * @Route("/", name="blog_index", methods={"GET"})
      */
-    public function index(BlogRepository $blogRepository): Response
+    public function index(BlogRepository $blogRepository, CommentRepository $commentRepository): Response
     {
+        $blog = new Blog();
+
+        $blog->getId();
 
         return $this->render('blog/index.html.twig', [
             'blogs' => $blogRepository->findAll(),
@@ -34,6 +43,7 @@ class BlogController extends AbstractController
         $blog = new Blog();
         $blog->setModified(new \DateTime('now'));
         $blog->setUser($this->getUser());
+
 
         $form = $this->createForm(BlogType::class, $blog);
         $form->handleRequest($request);
@@ -53,13 +63,33 @@ class BlogController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="blog_show", methods={"GET"})
+     * @Route("/{id}", name="blog_show", methods={"GET", "POST"})
      */
-    public function show(Blog $blog): Response
+    public function show(Blog $blog, Request $request, BlogRepository $blogRepository): Response
     {
+        $comment = new Comment();
 
+        $comment->setUser($this->getUser());
+        $comment->setBlog($blog);
+
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                'Your comment has been posted.'
+            );
+
+            return $this->redirectToRoute('blog_show', ['id' => $blog->getId()]);
+        }
         return $this->render('blog/show.html.twig', [
             'blog' => $blog,
+            'form' => $form->createView(),
+            'comments' => $blog->getComments()
         ]);
     }
 
@@ -91,7 +121,7 @@ class BlogController extends AbstractController
      */
     public function delete(Request $request, Blog $blog): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$blog->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $blog->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($blog);
             $entityManager->flush();

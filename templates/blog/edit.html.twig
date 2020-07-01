@@ -16,4 +16,7 @@
     <a href="{{ path('blog_index') }}">back to list</a>
 
     {{ include('blog/_delete_form.html.twig') }}
+
+    {{ include('blog/_form.html.twig', {'button_label': 'Update'}) }}
+
 {% endblock %}
