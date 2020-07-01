@@ -65,18 +65,12 @@ class BlogController extends AbstractController
     /**
      * @Route("/{id}", name="blog_show", methods={"GET", "POST"})
      */
-    public function show(Blog $blog, Request $request, CommentRepository $commentRepository): Response
+    public function show(Blog $blog, Request $request, BlogRepository $blogRepository): Response
     {
         $comment = new Comment();
 
-
         $comment->setUser($this->getUser());
         $comment->setBlog($blog);
-
-        $blogId = $commentRepository->findBy((array)$blog->getId());
-
-        dump($blogId);
-
 
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
@@ -95,6 +89,7 @@ class BlogController extends AbstractController
         return $this->render('blog/show.html.twig', [
             'blog' => $blog,
             'form' => $form->createView(),
+            'comments' => $blog->getComments()
         ]);
     }
 
