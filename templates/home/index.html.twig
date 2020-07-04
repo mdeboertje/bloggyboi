@@ -7,9 +7,8 @@
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('blog_new') }}" class="btn btn-dark mb-2">Nieuwe blog</a>
         {% endif %}
-
-
         <div class="row">
+
 
             {% for blog in blogs %}
                 <div class="col-md-4 mb-5">
